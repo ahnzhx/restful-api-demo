@@ -1,6 +1,6 @@
 package me.sonnie.demorestapi.events;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,16 +12,25 @@ import java.net.URI;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller
-@RequestMapping(value="/api/events")
+@RequestMapping(value="/api/events/", produces = "application/json")
 public class EventController {
 
-    @Autowired
-    EventRepository eventRepository;
+    private final EventRepository eventRepository;
+
+    private final ModelMapper modelMapper;
+
+    public EventController(EventRepository eventRepository, ModelMapper modelMapper) {
+        this.eventRepository = eventRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @PostMapping
-    public ResponseEntity createEvent(@RequestBody Event event){
-        Event newEvent = this.eventRepository.save(event);
-        URI createUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
+    public ResponseEntity createEvent(@RequestBody EventDto eventDto){
+        Event event = modelMapper.map(eventDto, Event.class);
+//        Event newEvent = this.eventRepository.save(event);
+        // temp bc db connection is not made yet
+        event.setId(10);
+        URI createUri = linkTo(EventController.class).slash(event.getId()).toUri();
         return ResponseEntity.created(createUri).body(event);
 
     }
