@@ -68,7 +68,6 @@ public class EventControllerTests {
     @Test
     public void createEvent_bad_request() throws Exception {
         Event event = Event.builder()
-                .id(10)
                 .name("Spring")
                 .description("REST API development with spring")
                 .beginEnrollmentDateTime(LocalDateTime.now())
@@ -82,7 +81,7 @@ public class EventControllerTests {
 
         Mockito.when(eventRepository.save(event)).thenReturn(event);
 
-        mockMvc.perform(post("/api/events")
+        mockMvc.perform(post("/api/events/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(event)))
@@ -90,6 +89,16 @@ public class EventControllerTests {
                 .andExpect(status().isBadRequest());
 
 
+    }
+
+    @Test
+    public void createEvent_bad_request_empty_input() throws Exception {
+        EventDto eventDto = EventDto.builder().build();
+
+        this.mockMvc.perform(post("/api/events/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest());
     }
 
 }

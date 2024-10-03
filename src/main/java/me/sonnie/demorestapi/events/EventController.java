@@ -1,6 +1,8 @@
 package me.sonnie.demorestapi.events;
 
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.Errors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,12 +27,14 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity createEvent(@RequestBody EventDto eventDto){
+    public ResponseEntity createEvent(@Valid @RequestBody EventDto eventDto, Errors errors){
+        if(errors.hasErrors()){
+            return ResponseEntity.badRequest().build();
+        }
         Event event = modelMapper.map(eventDto, Event.class);
-//        Event newEvent = this.eventRepository.save(event);
-        // temp bc db connection is not made yet
-        event.setId(10);
-        URI createUri = linkTo(EventController.class).slash(event.getId()).toUri();
+        Event newEvent = this.eventRepository.save(event);
+//        event.setId(10);
+        URI createUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
         return ResponseEntity.created(createUri).body(event);
 
     }
