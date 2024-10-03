@@ -1,6 +1,7 @@
 package me.sonnie.demorestapi.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.sonnie.demorestapi.common.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,7 @@ public class EventControllerTests {
     EventRepository eventRepository;
 
     @Test
+    @TestDescription("Creating events")
     public void createEvent() throws Exception {
         EventDto event = EventDto.builder()
                 .name("Spring")
@@ -66,6 +68,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription("Invalid input data - return bad request")
     public void createEvent_bad_request() throws Exception {
         Event event = Event.builder()
                 .name("Spring")
@@ -92,6 +95,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription("Empty input data - return bad request")
     public void createEvent_bad_request_empty_input() throws Exception {
         EventDto eventDto = EventDto.builder().build();
 
@@ -102,6 +106,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription("Wrong input data - return bad request")
     public void createEvent_bad_request_wrong_input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
