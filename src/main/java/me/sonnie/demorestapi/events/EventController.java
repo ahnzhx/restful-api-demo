@@ -1,6 +1,7 @@
 package me.sonnie.demorestapi.events;
 
 import jakarta.validation.Valid;
+import me.sonnie.demorestapi.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,13 +31,13 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity createEvent(@Valid @RequestBody EventDto eventDto, Errors errors){
+    public ResponseEntity<?> createEvent(@Valid @RequestBody EventDto eventDto, Errors errors){
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
         eventValidator.validate(eventDto, errors);
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
         Event event = modelMapper.map(eventDto, Event.class);
         event.update();
@@ -45,5 +46,9 @@ public class EventController {
         URI createUri = linkTo(EventController.class).slash(event.getId()).toUri();
         return ResponseEntity.created(createUri).body(event);
 
+    }
+
+    private static ResponseEntity<ErrorsResource> badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
 }
